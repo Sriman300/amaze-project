@@ -1,0 +1,48 @@
+from fastapi import FastAPI
+from pydantic import BaseModel
+
+- FastAPI creates API endpoints.
+- BaseModel defines the structure of data that your API expects.
+For example, an online shop item might have a name, price, and offer status. Pydantic helps validate that incoming data matches the expected structure and types.
+
+app = FastAPI()
+- This creates FastAPI application.
+
+class Item(BaseModel):
+    name: str
+    price: float
+    is_offer: bool | None = None 
+- defining what information an item must contain.
+- None means no value was supplied.
+= None makes the field optional, so the client doesn't have to provide it.
+
+@app.get("/")
+def read_root():
+    return {"Hello": "World"}
+- @app.get("/") tells FastAPI to handle GET requests sent to the root URL /.
+- def read_root(): defines the Python function that runs when that endpoint is called.
+- return {"Hello": "World"} returns a Python dictionary, which FastAPI sends as JSON.
+
+@app.get("/items/{item_id}")
+def read_item(item_id: int, q: str | None = None):
+    return {"item_id": item_id, "q": q}
+this endpoint has two different kinds of parameters.
+Path parameter: item_id
+
+http://127.0.0.1:8000/items/5?q=laptop
+
+The q value comes after ?. It is a query parameter.
+q is the parameter name.
+str means its value is text.
+None and the default None mean it can be omitted.
+
+@app.put("/items/{item_id}")
+def update_item(item_id: int, item: Item):
+    return {"item_name": item.name, "item_id": item_id}
+
+@app.put("/items/{item_id}")
+This registers a PUT endpoint. For example, a client can send a PUT request to /items/5.
+item_id: int
+FastAPI reads the item ID from the URL path and validates that it's an integer.
+item: Item
+This tells FastAPI to expect a JSON request body matching your Item Pydantic model.
